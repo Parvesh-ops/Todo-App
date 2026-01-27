@@ -28,5 +28,3 @@ This project demonstrates clean architecture, strong typing, and scalable state 
 
 ---
 
-## 📁 Project Structure
-
