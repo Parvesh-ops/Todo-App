@@ -1,7 +1,7 @@
 # 📝 Todo App – React + TypeScript + Context API
 
 A modern **Todo List application** built using **React**, **TypeScript**, and **Context API**.  
-This project demonstrates clean architecture, strong typing, and scalable state management without using localStorage (for now).
+This project demonstrates clean architecture, strong typing, and scalable state management with using localStorage .
 
 ---
 
