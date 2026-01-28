@@ -24,23 +24,27 @@ export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
   const [editTodo, setEditTodo] = useState<Todo | null>(null);
   const [search, setSearch] = useState<string>("");
 
-  // 🔹 Save todos to localStorage
+  //  Save todos to localStorage
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
+  //add Todo
   const addTodo = (todo: Todo) => {
     setTodos((prev) => [...prev, todo]);
   };
 
+  //delete Todo
   const deleteTodo = (id: number) => {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
+  //edit Todo
   const startEdit = (todo: Todo) => {
     setEditTodo(todo);
   };
 
+  //update Todo
   const updateTodo = (updatedTodo: Todo) => {
     setTodos((prev) =>
       prev.map((t) => (t.id === updatedTodo.id ? updatedTodo : t))
