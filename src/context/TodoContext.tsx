@@ -1,58 +1,74 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import type { Todo } from "../types/todo";
 
 interface TodoContextType {
-    todos: Todo[];
-    editTodo: Todo | null;
-    search: string;
-    addTodo: (todo: Todo) => void;
-    deleteTodo: (id: number) => void;
-    startEdit: (todo: Todo) => void;
-    updateTodo: (todo: Todo) => void;
-    setSearch: React.Dispatch<React.SetStateAction<string>>;
+  todos: Todo[];
+  editTodo: Todo | null;
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  addTodo: (todo: Todo) => void;
+  deleteTodo: (id: number) => void;
+  startEdit: (todo: Todo) => void;
+  updateTodo: (updatedTodo: Todo) => void;
 }
 
 const TodoContext = createContext<TodoContextType | null>(null);
 
 export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
-    const [todos, setTodos] = useState<Todo[]>([]);
-    const [editTodo, setEditTodo] = useState<Todo | null>(null)
-    const [search, setSearch] = useState<string>('')
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const saved = localStorage.getItem("todos");
+    return saved ? JSON.parse(saved) : [];
+  });
 
-    //add Todo
-    const addTodo = (todo: Todo) => {
-        setTodos((prev) => [...prev, todo])
-    }
+  const [editTodo, setEditTodo] = useState<Todo | null>(null);
+  const [search, setSearch] = useState<string>("");
 
-    //delete Todo
-    const deleteTodo = (id: number) => {
-        setTodos((prev) => prev.filter((t) => t.id !== id))
-    }
+  // 🔹 Save todos to localStorage
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
-    //edit todo
-    const startEdit = (todo: Todo) => {
-        setEditTodo(todo)
-    }
+  const addTodo = (todo: Todo) => {
+    setTodos((prev) => [...prev, todo]);
+  };
 
-    //update Todo
-    const updateTodo = (updatedTodo: Todo) => {
-        setTodos((prev) =>
-            prev.map((t) => (t.id === updatedTodo.id ? updatedTodo : t))
-        );
-        setEditTodo(null);
-    };
-    return (
-        <TodoContext.Provider value={{ todos, editTodo, search, addTodo, deleteTodo, startEdit, updateTodo, setSearch }}>
-            {children}
-        </TodoContext.Provider>
-    )
+  const deleteTodo = (id: number) => {
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const startEdit = (todo: Todo) => {
+    setEditTodo(todo);
+  };
+
+  const updateTodo = (updatedTodo: Todo) => {
+    setTodos((prev) =>
+      prev.map((t) => (t.id === updatedTodo.id ? updatedTodo : t))
+    );
+    setEditTodo(null);
+  };
+
+  return (
+    <TodoContext.Provider
+      value={{
+        todos,
+        editTodo,
+        search,
+        setSearch,
+        addTodo,
+        deleteTodo,
+        startEdit,
+        updateTodo,
+      }}
+    >
+      {children}
+    </TodoContext.Provider>
+  );
 };
 
-//hoooks
 export const useTodo = () => {
-    const context = useContext(TodoContext)
-    if (!context) {
-        throw new Error("useTodo must be used inside TodoProvider");
-    }
-    return context
+  const context = useContext(TodoContext);
+  if (!context) {
+    throw new Error("useTodo must be used inside TodoProvider");
+  }
+  return context;
 };
